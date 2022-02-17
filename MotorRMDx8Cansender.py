@@ -61,28 +61,7 @@ def positionloop(pos1,pos2,max_speed,max_speed2,motorid):
                         if data==str(pos2):
                                 break
         #print(cmd_buf[0])
-def positionloop2(pos1,pos2,time,time2):
-        global data 
-        max_speed=abs(int(pos1/time))
-        max_speed2=abs(int(pos2,time2))        
 
-        cmd_buf = [motorid-0x60,0xA4, 0X00, max_speed*6 & 0xFF, (max_speed*6>>8) & 0xFF, pos1*600 & 0xFF, (pos1*600>>8) & 0xFF, (pos1*600>>16) & 0xFF, (pos1*600>>24) & 0xFF]
-        cmd_buf1 = [motorid-0x60,0xA4, 0X00, max_speed2*6 & 0xFF, (max_speed2*6>>8) & 0xFF, pos2*600 & 0xFF, (pos2*600>>8) & 0xFF, (pos2*600>>16) & 0xFF, (pos2*600>>24) & 0xFF]
-        while True:
-                arduino.write(cmd_buf)
-                time.sleep(0.01)
-                while True:
-                        readPosition()     
-                        if data==str(pos1):
-                                break
-                
-                arduino.write(cmd_buf1)
-                time.sleep(0.01)
-                
-                while True:
-                        readPosition()     
-                        if data==str(pos2):
-                                break
 def readPosition():
         global data
         cmd_buf = [motorid-0x60,0x92, 0X00, 0X00,0X00,0X00,0X00, 0X00,0X00]
@@ -150,15 +129,4 @@ if __name__ == '__main__':
                         positionloop(pos1,pos2,max_speed,max_speed2,motorid)
                         pass
 
-        if int(controltype)==5:
-                motorid=int(input("Motorid:"),16)
-                
-                while True:
-                        pos1=int(input("Position 1 value (degree):"))
-                        time=float(input("Time (second):"))
-                        pos2=int(input("Position 2 value (degree):"))
-                        time2=float(input("Time(second):"))
-                        #direction=int(input("Speed:"))
-                        positionloop2(pos1,pos2,time,time2)
-                        pass
-                
+ 
