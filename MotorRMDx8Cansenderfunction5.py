@@ -49,7 +49,8 @@ def positionloop(pos1,pos2,max_speed,max_speed2,motorid):
                 arduino.write(cmd_buf)
                 time.sleep(0.01)
                 while True:
-                        readPosition()     
+                        readPosition()
+                        print(data)     
                         if data==str(pos1):
                                 break
                 
@@ -61,10 +62,10 @@ def positionloop(pos1,pos2,max_speed,max_speed2,motorid):
                         if data==str(pos2):
                                 break
         #print(cmd_buf[0])
-def positionloop2(pos1,pos2,time,time2):
+def positionloop2(pos1,pos2,time1,time2,motorid):
         global data 
-        max_speed=abs(int(pos1/time))
-        max_speed2=abs(int(pos2,time2))        
+        max_speed=abs(int(pos1*600/time1))
+        max_speed2=abs(int(pos2*600/time2))        
 
         cmd_buf = [motorid-0x60,0xA4, 0X00, max_speed*6 & 0xFF, (max_speed*6>>8) & 0xFF, pos1*600 & 0xFF, (pos1*600>>8) & 0xFF, (pos1*600>>16) & 0xFF, (pos1*600>>24) & 0xFF]
         cmd_buf1 = [motorid-0x60,0xA4, 0X00, max_speed2*6 & 0xFF, (max_speed2*6>>8) & 0xFF, pos2*600 & 0xFF, (pos2*600>>8) & 0xFF, (pos2*600>>16) & 0xFF, (pos2*600>>24) & 0xFF]
@@ -83,27 +84,33 @@ def positionloop2(pos1,pos2,time,time2):
                         readPosition()     
                         if data==str(pos2):
                                 break
+
+
 def readPosition():
         global data
         cmd_buf = [motorid-0x60,0x92, 0X00, 0X00,0X00,0X00,0X00, 0X00,0X00]
         arduino.write(cmd_buf)
         time.sleep(0.01)
         data = arduino.readline()
-        #data = [int(s) for s in re.findall(r'\b\d+\b', str(data))]
+        #print(data)
+        data = [int(s) for s in re.findall(r'\b\d+\b', str(data))]
         data =''.join(filter(str.isdigit,str(data)))
+        #print(data)
 def initmotor():
         cmd_buf1 = [motorid-0x60,0x88, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00]
         arduino.write(cmd_buf1)
         time.sleep(3)
 
 if __name__ == '__main__':
-        cmd_buf1 = [motorid-0x60,0xA4, 0X00,40*6& 0xFF, (40*6>>8) & 0xFF, 0*600 & 0xFF, (0*600>>8) & 0xFF, (0*600>>16) & 0xFF, (0*600>>24) & 0xFF]
         motorid=int(input("Motorid:"),16)
+        #cmd_buf1 = [motorid-0x60,0xA4, 0X00,40*6& 0xFF, (40*6>>8) & 0xFF, 0*600 & 0xFF, (0*600>>8) & 0xFF, (0*600>>16) & 0xFF, (0*600>>24) & 0xFF]
+        #arduino.write(cmd_buf1)
+        #time.sleep(0.01)
         initmotor()
         print("Select control:")
         print("1 ----- Current control")
         print("2 ----- Position control")
-        print("3 ----- Velocity control")
+        print("3 ----- Speed control")
         print("4 ----- Position Loop")
         print("5 ----- Position Loop 2")
         controltype=input("Control number:")
@@ -155,10 +162,10 @@ if __name__ == '__main__':
                 
                 while True:
                         pos1=int(input("Position 1 value (degree):"))
-                        time=float(input("Time (second):"))
+                        time1=float(input("Time (second):"))
                         pos2=int(input("Position 2 value (degree):"))
                         time2=float(input("Time(second):"))
                         #direction=int(input("Speed:"))
-                        positionloop2(pos1,pos2,time,time2)
+                        positionloop2(pos1,pos2,time1,time2,motorid)
                         pass
                 
